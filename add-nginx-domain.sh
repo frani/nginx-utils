@@ -50,3 +50,9 @@ EOF
 ln -s $config_file /etc/nginx/sites-enabled/
 
 echo "The configuration file $config_file has been created successfully in sites-available."
+
+echo "Restarting Nginx"
+
+service nginx restart
+
+service nginx status
