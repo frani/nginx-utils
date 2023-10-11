@@ -4,8 +4,8 @@
 # This was test on ubuntu. Primary was made to work with AWS
 # use sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/frani/tools/main/create_swap.sh)"
 
-# Get the amount of RAM in kilobytes
-ram_memory=$(free -k | awk '/^Mem:/{print $2}')
+# Get the amount of RAM in MB
+ram_memory=$(free -m | awk '/^Mem:/{print $2}')
 
 # Calculate the size of the swap memory (50% of RAM)
 swap_size=$((ram_memory / 2))
@@ -26,4 +26,4 @@ sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 # Display confirmation message
-echo "Swap memory of ${swap_size} kilobytes has been created and activated."
+echo "Swap memory of ${swap_size} MegaBytes has been created and activated."
