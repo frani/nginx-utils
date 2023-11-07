@@ -1,3 +1,6 @@
+# trigget it in one shoot
+# sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/frani/tools/main/install-docker-nginx-ubuntu.sh)"
+
 sudo apt update -y
 sudo apt install nginx apt-transport-https ca-certificates curl software-properties-common -y
 sudo ufw allow 'Nginx HTTP'
