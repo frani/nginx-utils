@@ -65,7 +65,7 @@ resource "aws_instance" "web" {
 }
 
 resource "aws_eip" "eip" {
-  vpc = true
+  domain = "vpc"
 }
 
 resource "aws_eip_association" "eip_assoc" {
