@@ -3,8 +3,9 @@
 # Prompt for the custom EC2 instance name
 read -p "Enter the custom name for your EC2 instance: " instance_name
 
+mkdir Terraforms 2>/dev/null
 # Create the Terraform file
-cat <<EOL > ${instance_name}.tf
+cat <<EOL > Terraforms/${instance_name}.tf
 provider "aws" {
   region = "sa-east-1"  # Specify your preferred AWS region
 }
@@ -52,9 +53,9 @@ resource "aws_instance" "web" {
   instance_type = "t2.micro"
 
     user_data = <<-EOF
-    #!/bin/bash
-    sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/frani/tools/main/create_swap.sh)"
-    EOF
+              #!/bin/bash
+              curl -fsSL https://raw.githubusercontent.com/frani/tools/main/create_swap.sh | sudo bash
+              EOF
 
   key_name      = aws_key_pair.my_key.key_name
   security_groups = [aws_security_group.allow_tcp.name]
@@ -79,4 +80,5 @@ output "instance_ip" {
 EOL
 
 # Notify the user
-echo "Terraform file '$instance_name.tf' created. Ready to launch ubuntu 24.04 LTS EC2 instance $instance_name in sa-east-1"
+echo "Terraform file '$instance_name.tf' created in 'Terraforms' folder."
+echo "Go to 'Terraforms' Folder and run 'terraform apply $instance_name'. Ready to launch ubuntu 24.04 LTS EC2 instance $instance_name in sa-east-1 with EIP"
