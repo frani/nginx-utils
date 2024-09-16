@@ -67,4 +67,10 @@ EOL
 
 # Notify the user
 echo "Terraform file '$instance_name.tf' created in 'terraforms' folder."
-echo "Go to 'terraforms' Folder and run 'terraform apply $instance_name'. Ready to launch ubuntu 24.04 LTS EC2 instance $instance_name in sa-east-1 with EIP"
+echo "Follow next steps:"
+echo "1. go to `terraforms` folder"
+echo "2. run `terraform init`"
+echo "3. run `terraform plan`"
+echo "4. run `terraform apply`"
+echo "5. Ready to launch ubuntu 24.04 LTS EC2 instance $instance_name in sa-east-1 with EIP""
+
