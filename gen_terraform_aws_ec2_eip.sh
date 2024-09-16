@@ -3,9 +3,9 @@
 # Prompt for the custom EC2 instance name
 read -p "Enter the custom name for your EC2 instance: " instance_name
 
-mkdir Terraforms 2>/dev/null
+mkdir terraforms 2>/dev/null
 # Create the Terraform file
-cat <<EOL > Terraforms/${instance_name}.tf
+cat <<EOL > terraforms/${instance_name}.tf
 provider "aws" {
   region = "sa-east-1"  # Specify your preferred AWS region
 }
@@ -66,5 +66,5 @@ output "instance_ip" {
 EOL
 
 # Notify the user
-echo "Terraform file '$instance_name.tf' created in 'Terraforms' folder."
-echo "Go to 'Terraforms' Folder and run 'terraform apply $instance_name'. Ready to launch ubuntu 24.04 LTS EC2 instance $instance_name in sa-east-1 with EIP"
+echo "Terraform file '$instance_name.tf' created in 'terraforms' folder."
+echo "Go to 'terraforms' Folder and run 'terraform apply $instance_name'. Ready to launch ubuntu 24.04 LTS EC2 instance $instance_name in sa-east-1 with EIP"
