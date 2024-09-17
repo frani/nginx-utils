@@ -1,7 +1,40 @@
 #!/bin/bash
 
+# download and run this script with the following command:
+# [domain] is the domain you want to add
+# [port] is the port you want to use locally for your domain
+# curl -sSL https://raw.githubusercontent.com/frani/tools/main/add-nginx-domain.sh | bash -s yourdomain.com 8080
+
+# Check if the user is root
+if [ "$(id -u)" -ne 0 ]; then
+    echo "This script must be run as root"
+    exit 1
+fi
+
+# Check if nginx and certbot are installed, if not install them
+if ! [ -x "$(command -v nginx)" ]; then
+    echo "Nginx is not installed."
+    echo "Installing Nginx"
+    apt-get update
+    apt-get install nginx
+fi
+
+if ! [ -x "$(command -v certbot)" ]; then
+    echo "Certbot is not installed."
+    echo "Installing Certbot"
+    apt-get update
+    apt-get install certbot
+fi
+
+# Check if the user has passed the correct number of arguments
 if [ $# -ne 2 ]; then
     echo "Usage: $0 domain port"
+    exit 1
+fi
+
+# Check if the domain is already in the config file
+if [ -f "/etc/nginx/sites-available/$domain" ]; then
+    echo "The domain $domain is already in the config file."
     exit 1
 fi
 
