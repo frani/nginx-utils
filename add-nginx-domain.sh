@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # download and run this script with the following command:
+# [email] is your email
 # [domain] is the domain you want to add
-# [port] is the port you want to use locally for your domain
-# curl -sSL https://raw.githubusercontent.com/frani/tools/main/add-nginx-domain.sh | bash -s yourdomain.com 8080
+# [port] is the port you want to use locally for your domain    
+# curl -sSL https://raw.githubusercontent.com/frani/tools/main/add-nginx-domain.sh | sudo bash -s [email] [domain] [port]
 
 # Check if the user is root
 if [ "$(id -u)" -ne 0 ]; then
@@ -27,8 +28,8 @@ if ! [ -x "$(command -v certbot)" ]; then
 fi
 
 # Check if the user has passed the correct number of arguments
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 domain port"
+if [ $# -ne 3 ]; then
+    echo "Usage: $0 email domain port"
     exit 1
 fi
 
@@ -38,8 +39,9 @@ if [ -f "/etc/nginx/sites-available/$domain" ]; then
     exit 1
 fi
 
-domain="$1"
-port="$2"
+email="$1"
+domain="$2"
+port="$3"
 
 # Configuration file name
 config_file="/etc/nginx/sites-available/$domain"
@@ -50,7 +52,8 @@ if [ -f "$config_file" ]; then
     exit 1
 fi
 
-certbot certonly --standalone --preferred-challenges http -d $domain
+# Get the SSL certificate for the domain using certbot silently
+certbot certonly --standalone --preferred-challenges http -d $domain --non-interactive --agree-tos --email your-email@example.com
 
 # Create the configuration file
 cat > "$config_file" <<EOF
