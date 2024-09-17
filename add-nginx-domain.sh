@@ -52,6 +52,11 @@ if [ -f "$config_file" ]; then
     exit 1
 fi
 
+# if nginx is running, stop it
+if [ "$(systemctl is-active nginx)" = "active" ]; then
+    systemctl stop nginx
+fi
+
 # Get the SSL certificate for the domain using certbot silently
 certbot certonly --standalone --preferred-challenges http -d $domain --non-interactive --agree-tos --email your-email@example.com
 
