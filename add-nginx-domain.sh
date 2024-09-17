@@ -12,19 +12,26 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# Check if nginx and certbot are installed, if not install them
+# Check if nginx, certbot and python3-certbot-nginx are installed, if not install them
 if ! [ -x "$(command -v nginx)" ]; then
     echo "Nginx is not installed."
     echo "Installing Nginx"
-    apt-get update
-    apt-get install nginx
+    apt update
+    apt install nginx
 fi
 
 if ! [ -x "$(command -v certbot)" ]; then
     echo "Certbot is not installed."
     echo "Installing Certbot"
-    apt-get update
-    apt-get install certbot
+    apt update
+    apt install certbot 
+fi
+
+if ! [ -x "$(command -v python3-certbot-nginx)" ]; then
+    echo "Python3-certbot-nginx is not installed."
+    echo "Installing Python3-certbot-nginx"
+    apt update
+    apt install python3-certbot-nginx
 fi
 
 # Check if the user has passed the correct number of arguments
@@ -57,8 +64,8 @@ if [ "$(systemctl is-active nginx)" = "active" ]; then
     systemctl stop nginx
 fi
 
-# Get the SSL certificate for the domain using certbot silently
-certbot certonly --standalone --preferred-challenges http -d $domain --non-interactive --agree-tos --email your-email@example.com
+# Get the SSL certificate for the domain using certbot nginx silently
+certbot certonly --nginx --preferred-challenges http -d $domain --non-interactive --agree-tos --email $email
 
 # Create the configuration file
 cat > "$config_file" <<EOF
