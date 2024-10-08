@@ -34,6 +34,22 @@ echo
 echo "Region: $region"
 echo
 
+# Ask if want to add swap memory int the instance, default is Y
+read -p "Do you want to add swap memory to the instance? (Y/n): " add_swap
+add_swap=${add_swap:-"y"}
+echo  
+echo "Add swap: $(if [ "$add_swap" == "y" ]; then echo "Yes"; else echo "No"; fi)"
+echo
+# ternary of add add_swap
+
+
+# Ask if want to install Docker in the instance, default is Y
+read -p "Do you want to install Docker in the instance? (Y/n): " install_docker
+install_docker=${install_docker:-"y"}
+echo  
+echo "Install Docker: $(if [ "$install_docker" == "y" ]; then echo "Yes"; else echo "No"; fi)"
+echo
+
 # check if terraforms folder exists and if exists, clean it
 rm -rf terraforms 2>/dev/null
 mkdir terraforms 2>/dev/null
@@ -72,10 +88,11 @@ resource "aws_instance" "web" {
   ami           = "ami-0c5410a9e09852edd"  # Ubuntu Server 24.04 LTS for sa-east-1 (update with your region's AMI ID)
   instance_type = "t2.micro"
 
-    user_data = <<-EOF
-              #!/bin/bash
-              curl -fsSL https://raw.githubusercontent.com/frani/tools/main/create_swap.sh | sudo bash
-              EOF
+  user_data = <<-EOF
+    #!/bin/bash
+    $(if [ "$add_swap" == "y" ]; then echo "curl -fsSL https://raw.githubusercontent.com/frani/tools/main/create_swap.sh | sudo bash"; fi)
+    $(if [ "$install_docker" == "y" ]; then echo "curl -fsSL https://raw.githubusercontent.com/frani/tools/main/install-docker-nginx-ubuntu.sh | sudo bash"; fi)
+    EOF
 
   key_name      = aws_key_pair.my_key.key_name
   security_groups = [aws_security_group.allow_tcp.name]
