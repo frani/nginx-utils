@@ -50,6 +50,13 @@ echo
 echo "Install Docker: $(if [ "$install_docker" == "y" ]; then echo "Yes"; else echo "No"; fi)"
 echo
 
+# Ask how much size in GB for the EBS volume, default is 30 GB
+read -p "How much size in GB for the EBS volume? (default is 30): " ebs_size
+ebs_size=${ebs_size:-"30"}
+echo  
+echo "EBS size: $ebs_size GB"
+echo
+
 # check if terraforms folder exists and if exists, clean it
 rm -rf terraforms 2>/dev/null
 mkdir terraforms 2>/dev/null
@@ -60,13 +67,13 @@ provider "aws" {
   region = "$region"  # Specify your preferred AWS region
 }
 
-resource "aws_key_pair" "my_key" {
-  key_name   = "my_key"
+resource "aws_key_pair" "$instance_name-key" {
+  key_name   = "$instance_name-key"
   public_key = file("~/.ssh/id_rsa.pub")  # Update with your actual public key file path
 }
 
-resource "aws_security_group" "allow_tcp" {
-  name        = "allow_tcp"
+resource "aws_security_group" "$instance_name-allow_tcp" {
+  name        = "$instance_name-allow_tcp"
   description = "Allow multiple TCP inbound traffic"
 
   ingress {
@@ -84,7 +91,15 @@ resource "aws_security_group" "allow_tcp" {
   }
 }
 
-resource "aws_instance" "web" {
+resource "aws_ebs_volume" "$instance_name-ebs" {
+  availability_zone = aws_instance.web.availability_zone
+  size              = $ebs_size
+  tags = {
+    Name = "$instance_name EBS"
+  }
+}
+
+resource "aws_instance" "$instance_name" {
   ami           = "ami-0c5410a9e09852edd"  # Ubuntu Server 24.04 LTS for sa-east-1 (update with your region's AMI ID)
   instance_type = "t2.micro"
 
@@ -95,24 +110,24 @@ resource "aws_instance" "web" {
     EOF
 
   key_name      = aws_key_pair.my_key.key_name
-  security_groups = [aws_security_group.allow_tcp.name]
+  security_groups = [aws_security_group.$instance_name-allow_tcp.name]
 
   tags = {
     Name = "$instance_name"
   }
 }
 
-resource "aws_eip" "eip" {
+resource "aws_eip" "$instance_name-eip" {
   domain = "vpc"
 }
 
-resource "aws_eip_association" "eip_assoc" {
-  instance_id   = aws_instance.web.id
-  allocation_id = aws_eip.eip.id
+resource "aws_eip_association" "$instance_name-eip_assoc" {
+  instance_id   = aws_instance.$instance_name.id
+  allocation_id = aws_eip.$instance_name-eip.id
 }
 
 output "instance_ip" {
-  value = aws_eip.eip.public_ip
+  value = aws_eip.$instance_name-eip.public_ip
 }
 EOL
 
